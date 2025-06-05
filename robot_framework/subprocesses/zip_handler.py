@@ -115,6 +115,6 @@ def process_zip(input_zip_path: str, max_size: int | None = None) -> Path:
             input_zip_path=input_zip_path, output_dir=None, max_size=max_size
         )
         return output_dir
-    else:
-        print(f"ZIP size is {zip_size / (1024 * 1024):.2f} MB — no splitting needed.")
-        return input_zip_path
+
+    print(f"ZIP size is {zip_size / (1024 * 1024):.2f} MB — no splitting needed.")
+    return input_zip_path
