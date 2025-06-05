@@ -1,10 +1,11 @@
 """This module handles resetting the state of the computer so the robot can work with a clean slate."""
 
 from OpenOrchestrator.orchestrator_connection.connection import OrchestratorConnection
+from robot_framework.subprocesses.shared_functions import delete_temp_files_and_folders
 
 
 def reset(orchestrator_connection: OrchestratorConnection) -> None:
-    """Clean up, close/kill all programs and start them again. """
+    """Clean up, close/kill all programs and start them again."""
     orchestrator_connection.log_trace("Resetting.")
     clean_up(orchestrator_connection)
     close_all(orchestrator_connection)
@@ -15,6 +16,7 @@ def reset(orchestrator_connection: OrchestratorConnection) -> None:
 def clean_up(orchestrator_connection: OrchestratorConnection) -> None:
     """Do any cleanup needed to leave a blank slate."""
     orchestrator_connection.log_trace("Doing cleanup.")
+    delete_temp_files_and_folders(orchestrator_connection=orchestrator_connection)
 
 
 def close_all(orchestrator_connection: OrchestratorConnection) -> None:
