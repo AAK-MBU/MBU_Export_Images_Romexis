@@ -21,9 +21,11 @@ SERVICE_NOW_API_PROD_USER = "service_now_prod_user"
 # ----------------------
 
 # The name of the job queue (if any)
-QUEUE_NAME = None
+QUEUE_NAME = "tan.eksportroentgen.main"
 
 # The limit on how many queue elements to process
 MAX_TASK_COUNT = 100
 
 # ----------------------
+TEMP_ROOT_PATH = "C:\\tmp\\tmt\\"
+ROMEXIS_ROOT_PATH = "\\\\SRVAPPROMEX04\\romexis_images$"
