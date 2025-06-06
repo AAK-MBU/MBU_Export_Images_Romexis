@@ -82,8 +82,8 @@ def split_zip(
         current_size = 0
 
         for info in file_infos:
-            file_uncompressed_size = info.file_size
-            if file_uncompressed_size > max_size:
+            file_compressed_size = info.compress_size
+            if file_compressed_size > max_size:
                 if current_bucket:
                     buckets.append(current_bucket)
                     current_bucket = []
@@ -91,13 +91,13 @@ def split_zip(
                 buckets.append([info])
                 continue
 
-            if current_size + file_uncompressed_size > max_size:
+            if current_size + file_compressed_size > max_size:
                 buckets.append(current_bucket)
                 current_bucket = []
                 current_size = 0
 
             current_bucket.append(info)
-            current_size += file_uncompressed_size
+            current_size += file_compressed_size
 
         if current_bucket:
             buckets.append(current_bucket)
