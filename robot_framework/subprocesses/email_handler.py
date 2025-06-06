@@ -101,53 +101,57 @@ def send_individual_email(
 
     subject = (
         f"Sagsnummer: {case_number} | "
-        f"Eksporteret billedmateriale fra Romexis {subject_suffix}"
+        f"Eksporteret billedmateriale fra Romexis"
     )
 
-    email_body = (
-        f"<p>Kære {caller_name}</p>"
-        "<p>"
-        "Her er vedhæftet det bestilte billedmateriale.<br>"
-        "Hvis du ikke skal bruge alle billederne, gør følgende:<br>"
-        "• Gem ZIP-mappen med billederne<br>"
-        "• Åbn zip-mappen i Stifinder og slet de billeder, som du ikke skal bruge<br>"
-        "<br>"
-        "Husk at slette denne mail når materialet er anvendt. Senest efter 30 dage.<br>"
-        "<br>"
-        "Venlig hilsen"
-        "<br>"
-        "Robotten"
-        "</p>"
-    )
+    if subject_suffix:
+        subject = f"{subject} {subject_suffix}"
 
-    email_body_multiple_files = (
-        f"<p>Kære {caller_name}</p>"
-        "<p>"
-        "Her er vedhæftet det bestilte billedmateriale.<br>"
-        "Hvis du ikke skal bruge alle billederne, gør følgende:<br>"
-        "• Gem ZIP-mappen med billederne<br>"
-        "• Åbn zip-mappen i Stifinder og slet de billeder, som du ikke skal bruge<br>"
-        "<br>"
-        "Husk at slette denne mail når materialet er anvendt. Senest efter 30 dage.<br>"
-        "<br>"
-        "<span style='color: red;'>"
-        "BEMÆRK:<br>"
-        "Normalt sendes alt billedmateriale i en mail.<br>"
-        "I denne bestilling er billedmaterialet er så omfattende, at det sendes i flere mails.<br>"
-        "I mailens overskrift kan du se, hvor mange mails, der fremsendes. Fx står der 1/2 og 2/2.<br>"
-        "</span>"
-        "<br>"
-        "Venlig hilsen<br>"
-        "Robotten"
-        "</p>"
-    )
+    if multiple_files:
+        email_body = (
+            f"<p>Kære {caller_name}</p>"
+            "<p>"
+            "Her er vedhæftet det bestilte billedmateriale.<br>"
+            "Hvis du ikke skal bruge alle billederne, gør følgende:<br>"
+            "• Gem ZIP-mappen med billederne<br>"
+            "• Åbn zip-mappen i Stifinder og slet de billeder, som du ikke skal bruge<br>"
+            "<br>"
+            "Husk at slette denne mail når materialet er anvendt. Senest efter 30 dage.<br>"
+            "<br>"
+            "<span style='color: red;'>"
+            "BEMÆRK:<br>"
+            "Normalt sendes alt billedmateriale i en mail.<br>"
+            "I denne bestilling er billedmaterialet er så omfattende, at det sendes i flere mails.<br>"
+            "I mailens overskrift kan du se, hvor mange mails, der fremsendes. Fx står der 1/2 og 2/2.<br>"
+            "</span>"
+            "<br>"
+            "Venlig hilsen<br>"
+            "Robotten"
+            "</p>"
+        )
+    else:
+        email_body = (
+            f"<p>Kære {caller_name}</p>"
+            "<p>"
+            "Her er vedhæftet det bestilte billedmateriale.<br>"
+            "Hvis du ikke skal bruge alle billederne, gør følgende:<br>"
+            "• Gem ZIP-mappen med billederne<br>"
+            "• Åbn zip-mappen i Stifinder og slet de billeder, som du ikke skal bruge<br>"
+            "<br>"
+            "Husk at slette denne mail når materialet er anvendt. Senest efter 30 dage.<br>"
+            "<br>"
+            "Venlig hilsen"
+            "<br>"
+            "Robotten"
+            "</p>"
+        )
 
     try:
         smtp_util.send_email(
             receiver=recipient,
             sender="no-reply@mbu.aarhus.dk",
             subject=subject,
-            body=email_body_multiple_files if multiple_files else email_body,
+            body=email_body,
             html_body=True,
             smtp_server=config.SMTP_SERVER,
             smtp_port=config.SMTP_PORT,
