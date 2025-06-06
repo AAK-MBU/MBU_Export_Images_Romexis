@@ -28,4 +28,4 @@ MAX_TASK_COUNT = 100
 
 # ----------------------
 TEMP_ROOT_PATH = "C:\\tmp\\tmt\\"
-ROMEXIS_ROOT_PATH = "\\\\SRVAPPROMEX04\\romexis_images$"
+ROMEXIS_ROOT_PATH = r"\\SRVAPPROMEX04\romexis_images$"

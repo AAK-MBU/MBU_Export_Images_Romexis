@@ -21,7 +21,7 @@ dependencies = [
     "openpyxl >= 3.1.2",
     "pyodbc >= 5.1.0",
     "itk-dev-shared-components",
-    "mbu-dev-shared-components == 1.2.0",
+    "mbu-dev-shared-components == 1.2.1",
 ]
 
 [project.optional-dependencies]

@@ -39,7 +39,6 @@ def process_images_threaded(
         for img in images_data:
             gamma_data = db_handler.get_gamma_data(image_id=img["image_id"])
             source_path = build_source_path(img["file_path"])
-            print(f"{source_path=}")
 
             if not os.path.exists(source_path):
                 print(f"Skipping missing file: {source_path}")

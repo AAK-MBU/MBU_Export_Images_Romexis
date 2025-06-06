@@ -16,7 +16,23 @@ from robot_framework import config
 def create_zip_from_images(
     ssn: str, person_name: str, source_folder: str
 ) -> tuple[str, str]:
-    """Zip processed image files."""
+    """Zip processed image files.
+
+    Args:
+        ssn: Patient's social security number, used for the subfolder under TEMP_ROOT_PATH.
+        person_name: Patient's name, used for the ZIP file's name.
+        source_folder: Path to the folder containing the processed image files.
+
+    Returns:
+        zip_full_path: Full path to the created ZIP.
+        zip_filename: The name of the ZIP file (without the path).
+    """
+    if not os.path.isdir(source_folder):
+        raise FileNotFoundError(f"Source folder does not exist: {source_folder}")
+    
+    if not any(Path(source_folder).iterdir()):
+        raise ValueError(f"Source folder is empty, nothing to zip: {source_folder}")
+
     zip_file_path = os.path.join(config.TEMP_ROOT_PATH, ssn, "edi_portal")
 
     if not os.path.exists(zip_file_path):
@@ -46,15 +62,19 @@ def split_zip(
     Returns:
         Path: Path to the directory containing the split ZIP files.
     """
-    input_zip_path = Path(input_zip_path)
+    input_path = Path(input_zip_path)
+
+    if not input_path.is_file():
+        raise FileNotFoundError(f"Input ZIP file does not exist: {input_zip_path}")
+
     if output_dir is None:
-        output_dir = input_zip_path.parent / f"{input_zip_path.stem}_split"
+        output_dir = input_path.parent / f"{input_zip_path.stem}_split"
     else:
         output_dir = Path(output_dir)
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    with zipfile.ZipFile(input_zip_path, "r") as original_zip:
+    with zipfile.ZipFile(input_path, "r") as original_zip:
         file_infos = original_zip.infolist()
 
         buckets = []
@@ -62,33 +82,34 @@ def split_zip(
         current_size = 0
 
         for info in file_infos:
-            if info.file_size > max_size:
-                raise ValueError(
-                    f"File '{info.filename}' is larger than the max split size of {max_size} bytes."
-                )
+            file_uncompressed_size = info.file_size
+            if file_uncompressed_size > max_size:
+                if current_bucket:
+                    buckets.append(current_bucket)
+                    current_bucket = []
+                    current_size = 0
+                buckets.append([info])
+                continue
 
-            if current_size + info.file_size > max_size:
+            if current_size + file_uncompressed_size > max_size:
                 buckets.append(current_bucket)
                 current_bucket = []
                 current_size = 0
 
             current_bucket.append(info)
-            current_size += info.file_size
+            current_size += file_uncompressed_size
 
         if current_bucket:
             buckets.append(current_bucket)
 
-        for i, bucket in enumerate(buckets):
-            part_zip_path = output_dir / f"{input_zip_path.stem}_part{i+1}.zip"
-            with zipfile.ZipFile(
-                part_zip_path, "w", compression=zipfile.ZIP_DEFLATED
-            ) as part_zip:
+        for idx, bucket in enumerate(buckets, start=1):
+            part_zip_path = output_dir / f"{input_path.stem}_part{idx}.zip"
+            with zipfile.ZipFile(part_zip_path, "w", compression=zipfile.ZIP_DEFLATED) as part_zip:
                 for info in bucket:
                     data = original_zip.read(info.filename)
                     part_zip.writestr(info, data)
 
-    print(f"Split into {len(buckets)} ZIP file(s) at: {output_dir}")
-
+    print(f"Split into {len(buckets)} ZIP file(s) i mappe: {output_dir}")
     return output_dir
 
 
@@ -103,8 +124,12 @@ def process_zip(input_zip_path: str, max_size: int | None = None) -> Path:
     returns:
         Path | None: Path to the directory containing the split ZIP files, or None if no splitting was needed.
     """
-    input_zip_path = Path(input_zip_path)
-    zip_size = input_zip_path.stat().st_size
+    input_path = Path(input_zip_path)
+
+    if not input_path.is_file():
+        raise FileNotFoundError(f"Input ZIP-fil findes ikke: {input_zip_path}")
+
+    zip_size = input_path.stat().st_size
 
     if max_size is None:
         max_size = 50 * 1024 * 1024
@@ -112,9 +137,9 @@ def process_zip(input_zip_path: str, max_size: int | None = None) -> Path:
     if zip_size > max_size:
         print(f"ZIP size is {zip_size / (1024 * 1024):.2f} MB — splitting...")
         output_dir = split_zip(
-            input_zip_path=input_zip_path, output_dir=None, max_size=max_size
+            input_zip_path=input_path, output_dir=None, max_size=max_size
         )
         return output_dir
 
     print(f"ZIP size is {zip_size / (1024 * 1024):.2f} MB — no splitting needed.")
-    return input_zip_path
+    return input_path
