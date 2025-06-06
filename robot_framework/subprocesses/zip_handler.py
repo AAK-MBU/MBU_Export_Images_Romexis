@@ -29,7 +29,7 @@ def create_zip_from_images(
     """
     if not os.path.isdir(source_folder):
         raise FileNotFoundError(f"Source folder does not exist: {source_folder}")
-    
+
     if not any(Path(source_folder).iterdir()):
         raise ValueError(f"Source folder is empty, nothing to zip: {source_folder}")
 

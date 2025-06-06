@@ -9,16 +9,16 @@ import sys
 script_directory = os.path.dirname(os.path.realpath(__file__))
 os.chdir(script_directory)
 
-venv_name = ".venv"
+VENV_NAME = ".venv"
 
 # 1) Ensure 'uv' is installed into this same interpreter
 subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "uv"], check=True)
 
 # 2) Create (or update) the virtual environment under ".venv" via uv
-subprocess.run([sys.executable, "-m", "uv", "venv", venv_name], check=True)
+subprocess.run([sys.executable, "-m", "uv", "venv", VENV_NAME], check=True)
 
 # Path to the venv's python executable
-venv_python = os.path.join(venv_name, "Scripts", "python")
+venv_python = os.path.join(VENV_NAME, "Scripts", "python")
 
 # 3) Bootstrap pip inside the new venv
 subprocess.run([venv_python, "-m", "ensurepip", "--upgrade"], check=True)
