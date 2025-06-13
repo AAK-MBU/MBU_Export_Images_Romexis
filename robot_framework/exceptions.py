@@ -34,6 +34,11 @@ def handle_error(message: str, error_count: str | None, error: Exception, queue_
         "trace": traceback.format_exc()
     }
     error_msg = json.dumps(error_dict, ensure_ascii=False)
+    error_msg = (
+        f"{error_msg[:500]}  [...] {error_msg[-490:]}"
+        if len(error_msg) > 1000
+        else error_msg
+    ) 
     error_email = orchestrator_connection.get_constant(config.ERROR_EMAIL).value
 
     orchestrator_connection.log_error(error_msg)
