@@ -25,7 +25,7 @@ def process(
 
     try:
         export_and_send_images(
-            ssn=queue_element_data["patient_cpr"],
+            ssn=queue_element_data["patient_cpr"].replace("-", ""),
             connection_string=orchestrator_connection.get_constant(
                 "romexis_db_connstr"
             ).value,
